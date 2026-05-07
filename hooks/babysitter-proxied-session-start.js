@@ -14,7 +14,7 @@ try {
     timeout: 30000,
     env: Object.assign({}, process.env, {
       HOOK_TYPE: process.env.HOOK_TYPE || "",
-      ADAPTER_NAME: process.env.ADAPTER_NAME || "oh-my-pi",
+      ADAPTER_NAME: process.env.ADAPTER_NAME || "omp",
       PLUGIN_ROOT: PLUGIN_ROOT
     })
   });
