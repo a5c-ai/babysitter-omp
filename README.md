@@ -10,7 +10,23 @@ This is a thin oh-my-pi package:
 
 ## Installation
 
-Recommended:
+Install the Babysitter CLI once when using the SDK helper:
+
+```bash
+npm install -g @a5c-ai/babysitter
+```
+
+Recommended for automation:
+
+```bash
+# Global install
+babysitter harness:install-plugin oh-my-pi
+
+# Workspace install
+babysitter harness:install-plugin oh-my-pi --workspace /path/to/repo
+```
+
+Native oh-my-pi plugin install:
 
 ```bash
 omp plugin install @a5c-ai/babysitter-omp
@@ -22,10 +38,11 @@ Verify the plugin is available:
 babysitter harness:discover --json
 ```
 
-Development helper:
+Published package installer:
 
 ```bash
-npx @a5c-ai/babysitter-omp install --workspace /path/to/repo
+npx --yes @a5c-ai/babysitter-omp install --global
+npx --yes @a5c-ai/babysitter-omp install --workspace /path/to/repo
 ```
 
 Removal:
@@ -62,7 +79,7 @@ driver, custom tools, or direct run mutation logic.
 ## Plugin Layout
 
 ```text
-plugins/babysitter-omp/
+artifacts/generated-plugins/oh-my-pi/
 |-- package.json
 |-- versions.json
 |-- extensions/
@@ -82,8 +99,14 @@ PLUGIN_ROOT="${OMP_PLUGIN_ROOT:-$(pwd)}"
 SDK_VERSION=$(node -e "try{const fs=require('fs');const path=require('path');const pluginRoot=process.env.OMP_PLUGIN_ROOT||process.env.PLUGIN_ROOT||process.cwd();const probes=[path.join(pluginRoot,'versions.json'),path.join(pluginRoot,'plugins','babysitter-omp','versions.json'),path.join(pluginRoot,'node_modules','@a5c-ai','babysitter-omp','versions.json'),path.join(process.cwd(),'node_modules','@a5c-ai','babysitter-omp','versions.json')];for(const probe of probes){if(fs.existsSync(probe)){console.log(JSON.parse(fs.readFileSync(probe,'utf8')).sdkVersion||'latest');process.exit(0)}}console.log('latest')}catch{console.log('latest')}")
 npm i -g @a5c-ai/babysitter-sdk@$SDK_VERSION
 
-CLI="npx -y @a5c-ai/babysitter-sdk@$SDK_VERSION"
+if command -v babysitter >/dev/null 2>&1 && babysitter --version >/dev/null 2>&1; then
+  CLI="babysitter"
+else
+  CLI="npm exec --yes --package @a5c-ai/babysitter-sdk@$SDK_VERSION -- babysitter"
+fi
 ```
+
+If a stale or broken global shim fails with `MODULE_NOT_FOUND`, repair it with `npm rm -g @a5c-ai/babysitter @a5c-ai/babysitter-sdk && npm i -g @a5c-ai/babysitter-sdk@$SDK_VERSION`, then re-run `babysitter --version`.
 
 ## Marketplace And Distribution
 
@@ -116,7 +139,7 @@ omp plugin uninstall @a5c-ai/babysitter-omp
 ## Tests
 
 ```bash
-cd plugins/babysitter-omp
+cd artifacts/generated-plugins/oh-my-pi
 npm test
 ```
 
